@@ -1,0 +1,116 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: lifeline-postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-lifeline}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: lifeline-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    container_name: lifeline-auth
+    env_file:
+      - ./auth/.env
+    environment:
+      - DB_TYPE=${DB_TYPE}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB}
+      - SERVICE_PORT=8000
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+
+  hospital_service:
+    image: python:3.11-slim
+    container_name: lifeline-hospital
+    working_dir: /app
+    volumes:
+      - ./hospital_service:/app
+    command: bash -c "pip install -r requirements.txt && alembic upgrade head || true && python main.py"
+    environment:
+      - DB_TYPE=postgresql+psycopg2
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB}
+    depends_on:
+      - postgres
+    ports:
+      - "8888:8888"
+
+  blood_req_service:
+    image: python:3.11-slim
+    container_name: lifeline-requests
+    working_dir: /app
+    volumes:
+      - ./blood_req_service:/app
+    command: bash -c "pip install -r requirements.txt && alembic upgrade head || true && python main.py"
+    environment:
+      - DB_TYPE=postgresql+psycopg2
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB}
+    depends_on:
+      - postgres
+    ports:
+      - "8989:8989"
+
+  gateway:
+    image: python:3.11-slim
+    container_name: lifeline-gateway
+    working_dir: /app
+    volumes:
+      - ./gateway:/app
+    command: bash -c "pip install -r requirements.txt && python main.py"
+    environment:
+      - AUTH_BASE_URL=http://auth:8000
+      - HOSPITAL_BASE_URL=http://hospital_service:8888
+      - REQUESTS_BASE_URL=http://blood_req_service:8989
+    depends_on:
+      - auth
+      - hospital_service
+      - blood_req_service
+    ports:
+      - "8088:8088"
+
+  notification_service:
+    image: python:3.11-slim
+    container_name: lifeline-notifications
+    working_dir: /app
+    volumes:
+      - ./notification_service:/app
+    command: bash -c "pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8099 --reload"
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+    ports:
+      - "8099:8099"
+
+volumes:
+  pgdata:
+
+
