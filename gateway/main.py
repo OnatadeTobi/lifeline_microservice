@@ -1,5 +1,6 @@
 from fastapi import FastAPI, status, Request, HTTPException
 
+
 import uvicorn
 
 from router.router import routes
