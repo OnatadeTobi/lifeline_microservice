@@ -6,14 +6,14 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import Session
 
 
-class UserRole(str, Enum):
+class UserRole(str, Enum): 
     ADMIN = "admin"
-    DONOR = "donor"
+    DONOR = "donor" 
     REQUESTER = "requester"
     HOSPITAL_ADMIN = "hospital_admin"
-    VOLUNTEER = "volunteer"
+    VOLUNTEER = "volunteer" 
 
-# Role-based access control dependencies
+# Role-based access control dependencies     
 
 def is_donor(user: dict):
     if user["role"] != UserRole.DONOR.value:
