@@ -4,14 +4,14 @@ import uvicorn
 from router.route import app as request_router
 
 
-app = FastAPI(title="Request Service")
+app = FastAPI(title="Request Service" )
 app.include_router(request_router)
 
 
 @app.get("/")
 async def home():
     message = {
-        "message": "Request service is alive!"
+        "message": "Request service is alive! "
     }
     return message
 
