@@ -65,4 +65,3 @@ def match_users(request_data: dict, db: Session):
         .all()
 
     return matches
-
