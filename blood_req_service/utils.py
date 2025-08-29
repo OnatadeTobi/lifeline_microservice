@@ -64,4 +64,4 @@ def match_users(request_data: dict, db: Session):
         .order_by(distance_expr) \
         .all()
 
-    return matches
+    return matches         
