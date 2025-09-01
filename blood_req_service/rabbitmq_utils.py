@@ -7,7 +7,7 @@ from database import get_db
 from models.request_model import Request
 from sqlalchemy.orm import Session
 from sqlalchemy import update as sqlalchemy_update
-from sqlalchemy import func
+from sqlalchemy import func      
 
 def json_serializer(obj):
     if isinstance(obj, datetime):
