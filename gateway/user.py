@@ -57,5 +57,5 @@ def delete_user(user_id, user = Depends(verify_token)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token is missing")
     response = access.delete_user(user=user, user_id=user_id)
 
-    return response
+    return response     
 
