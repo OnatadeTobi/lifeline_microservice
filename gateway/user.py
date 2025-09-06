@@ -50,12 +50,11 @@ def get_users(user = Depends(verify_token)):
 
     return response
 
-    
+
 @server.delete("/{user_id}", status_code=status.HTTP_200_OK)
 def delete_user(user_id, user = Depends(verify_token)):
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token is missing")
     response = access.delete_user(user=user, user_id=user_id)
 
-    return response     
-
+    return response
