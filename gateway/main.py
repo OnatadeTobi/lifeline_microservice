@@ -1,11 +1,11 @@
 from fastapi import FastAPI, status, Request, HTTPException
 
-
+ 
 import uvicorn
 
-from router.router import routes
+from router.router import routes  
 
-app = FastAPI()
+app = FastAPI()  
 app.include_router(router=routes)
 
     
