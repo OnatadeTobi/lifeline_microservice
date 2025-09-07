@@ -8,7 +8,7 @@ from router.router import routes
 app = FastAPI()
 app.include_router(router=routes)
 
-
+    
 @app.get("/", status_code=status.HTTP_200_OK)
 async def home():
     return {
