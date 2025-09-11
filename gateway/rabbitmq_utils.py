@@ -1,21 +1,21 @@
 import json
 import aio_pika
-import asyncio
+import asyncio      
 
 RABBITMQ_URL = "amqp://localhost/"
 EXCHANGE_NAME = "events"
-SERVICE_QUEUE_NAME = "gateway_service"
+SERVICE_QUEUE_NAME = "gateway_service"      
 
 
 async def process_message(message: aio_pika.IncomingMessage):
     """
     Processes incoming RabbitMQ messages.
     """
-    async with message.process():  
+    async with message.process():       
         try:
             body = message.body.decode()
-            data = json.loads(body)
-            event_name = message.routing_key  
+            data = json.loads(body)     
+            event_name = message.routing_key       
 
             print(f"📩 [{SERVICE_QUEUE_NAME}] Received event: {event_name}, Data: {data}")
             
