@@ -42,7 +42,7 @@ async def consume():
 
             print(f" [*] Waiting for events on {SERVICE_QUEUE_NAME}...")
 
-            await asyncio.Future()  # Keep running forever
+            await asyncio.Future()  # Keep running forever    
 
         except Exception as e:
             print(f"⚠️ Connection lost: {e}. Reconnecting in 5 seconds...")
